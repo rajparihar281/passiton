@@ -41,3 +41,23 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+
+
+create policy "Public profiles are viewable by everyone"
+  on public.profiles for select
+  using ( true );
+
+create policy "Users can update own profile"
+  on public.profiles for update
+  using ( auth.uid() = id );
+
+
+
+create policy "Users can view own verifications"
+  on public.verifications for select
+  using ( auth.uid() = user_id );
+
+create policy "Users can upload own verification docs"
+  on public.verifications for insert
+  with check ( auth.uid() = user_id );

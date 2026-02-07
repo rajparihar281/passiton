@@ -31,3 +31,34 @@ create index requests_owner_idx on public.borrow_requests(owner_id);
 -- Enable Security
 alter table public.borrow_requests enable row level security;
 alter table public.transactions enable row level security;
+
+
+
+
+
+
+
+create policy "Users can view own requests"
+  on public.borrow_requests for select
+  using (
+    auth.uid() = borrower_id or 
+    auth.uid() = owner_id
+  );
+
+create policy "Users can create borrow requests"
+  on public.borrow_requests for insert
+  with check ( auth.uid() = borrower_id );
+
+create policy "Participants can update request status"
+  on public.borrow_requests for update
+  using (
+    auth.uid() = borrower_id or 
+    auth.uid() = owner_id
+  );
+
+create policy "Users can view own transactions"
+  on public.transactions for select
+  using (
+    auth.uid() = borrower_id or 
+    auth.uid() = owner_id
+  );

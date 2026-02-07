@@ -29,3 +29,49 @@ create index items_college_idx on public.items(college_id);
 -- Enable Security
 alter table public.items enable row level security;
 alter table public.item_images enable row level security;
+
+
+
+
+create policy "Items are viewable by everyone"
+  on public.items for select
+  using ( true );
+
+
+create policy "Users can create items"
+  on public.items for insert
+  with check ( auth.uid() = owner_id );
+
+create policy "Users can update own items"
+  on public.items for update
+  using ( auth.uid() = owner_id );
+
+create policy "Users can delete own items"
+  on public.items for delete
+  using ( auth.uid() = owner_id );
+
+create policy "Item images are viewable by everyone"
+  on public.item_images for select
+  using ( true );
+
+
+create policy "Users can add images to own items"
+  on public.item_images for insert
+  with check (
+    exists (
+      select 1 from public.items
+      where id = item_id
+      and owner_id = auth.uid()
+    )
+  );
+
+
+create policy "Users can delete images from own items"
+  on public.item_images for delete
+  using (
+    exists (
+      select 1 from public.items
+      where id = item_id
+      and owner_id = auth.uid()
+    )
+  );

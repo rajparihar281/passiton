@@ -57,7 +57,7 @@ export const Sidebar = () => {
       <div className="p-4 flex items-center justify-between border-b">
         {!collapsed ? (
           <Link to="/dashboard" className="flex items-center space-x-2">
-            <Package className="w-8 h-8 text-blue-600" />
+            <Package className="w-8 h-8 text-teal-600" />
             <span className="text-xl font-bold text-gray-900">PassItOn</span>
           </Link>
         ) : (
@@ -81,7 +81,7 @@ export const Sidebar = () => {
         <Link
           to="/dashboard"
           className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
-            isActive('/dashboard') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'
+            isActive('/dashboard') ? 'bg-teal-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
           <Home className="w-5 h-5 transition-transform duration-300 hover:scale-110" />

@@ -20,6 +20,7 @@ import testRoutes from "./routes/test.routes.js";
 import serviceRoutes from "./routes/service.routes.js";
 import bookingRoutes from "./routes/booking.routes.js";
 import unifiedBookingRoutes from "./routes/unified-booking.routes.js";
+import biddingRoutes from "./routes/bidding.routes.js";
 import { errorHandler, notFound } from "./middleware/error.middleware.js";
 
 const app = express();
@@ -84,6 +85,7 @@ app.use("/api/test", testRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/unified-bookings", unifiedBookingRoutes);
+app.use("/api/bidding", biddingRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

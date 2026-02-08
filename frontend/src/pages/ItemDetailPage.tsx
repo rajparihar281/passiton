@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { DollarSign, User, Package } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { MainLayout } from '../layouts/MainLayout';
-import { Button, Spinner, Card, Badge, BorrowRequestModal } from '../components';
+import { Button, Spinner, Card, Badge, BorrowRequestModal, BiddingChatRoom } from '../components';
 import { itemService } from '../services';
 import { useAuth } from '../context/AuthContext';
 
@@ -14,10 +14,16 @@ export const ItemDetailPage = () => {
   const [item, setItem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showBorrowModal, setShowBorrowModal] = useState(false);
+  const [showBiddingRoom, setShowBiddingRoom] = useState(false);
+  const [hasBiddingSession, setHasBiddingSession] = useState(false);
 
   useEffect(() => {
     loadItem();
   }, [id]);
+
+  useEffect(() => {
+    if (item) checkBiddingSession();
+  }, [item]);
 
   const loadItem = async () => {
     try {
@@ -29,6 +35,18 @@ export const ItemDetailPage = () => {
       toast.error('Failed to load item');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkBiddingSession = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/bidding/sessions/item/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setHasBiddingSession(!!data.data);
+      }
+    } catch (error) {
+      setHasBiddingSession(false);
     }
   };
 
@@ -126,9 +144,29 @@ export const ItemDetailPage = () => {
             </Card>
 
             {!isOwnItem && item.is_available && (
-              <Button onClick={handleBorrowItem} className="w-full">
-                <Package className="w-5 h-5 mr-2" />
-                {user ? 'Borrow Item' : 'Login to Borrow'}
+              <div className="space-y-2">
+                <Button onClick={handleBorrowItem} className="w-full">
+                  <Package className="w-5 h-5 mr-2" />
+                  {user ? 'Borrow Item' : 'Login to Borrow'}
+                </Button>
+                {hasBiddingSession && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowBiddingRoom(true)} 
+                    className="w-full"
+                  >
+                    💰 Join Bidding Room
+                  </Button>
+                )}
+              </div>
+            )}
+            {isOwnItem && (
+              <Button 
+                variant="outline" 
+                onClick={() => setShowBiddingRoom(true)} 
+                className="w-full"
+              >
+                {hasBiddingSession ? '💰 Manage Bidding' : '💰 Enable Bidding'}
               </Button>
             )}
           </div>
@@ -149,6 +187,15 @@ export const ItemDetailPage = () => {
           setShowBorrowModal(false);
         }}
       />
+
+      {showBiddingRoom && (
+        <BiddingChatRoom
+          listingId={item.id}
+          listingType="item"
+          listing={item}
+          onClose={() => setShowBiddingRoom(false)}
+        />
+      )}
     </MainLayout>
   );
 };

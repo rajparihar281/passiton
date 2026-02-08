@@ -8,3 +8,4 @@ export { DeleteConfirmationModal } from './DeleteConfirmationModal';
 export { CancelBookingModal } from './CancelBookingModal';
 export { UnifiedCancelBookingModal } from './UnifiedCancelBookingModal';
 export { BorrowRequestModal } from './BorrowRequestModal';
+export { BiddingChatRoom } from './BiddingChatRoom';

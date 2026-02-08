@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, DollarSign, User, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { MainLayout } from '../layouts/MainLayout';
-import { Button, Spinner, Card } from '../components';
+import { Button, Spinner, Card, BiddingChatRoom } from '../components';
 import { skillService } from '../services';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,10 +13,16 @@ export const SkillDetailPage = () => {
   const { user } = useAuth();
   const [service, setService] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showBiddingRoom, setShowBiddingRoom] = useState(false);
+  const [hasBiddingSession, setHasBiddingSession] = useState(false);
 
   useEffect(() => {
     loadService();
   }, [id]);
+
+  useEffect(() => {
+    if (service) checkBiddingSession();
+  }, [service]);
 
   const loadService = async () => {
     try {
@@ -28,6 +34,18 @@ export const SkillDetailPage = () => {
       toast.error('Failed to load service');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkBiddingSession = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/bidding/sessions/service/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setHasBiddingSession(!!data.data);
+      }
+    } catch (error) {
+      setHasBiddingSession(false);
     }
   };
 
@@ -138,9 +156,29 @@ export const SkillDetailPage = () => {
             </Card>
 
             {!isOwnService && (
-              <Button onClick={handleBookService} className="w-full">
-                <Calendar className="w-5 h-5 mr-2" />
-                {user ? 'Book Service' : 'Login to Book'}
+              <div className="space-y-2">
+                <Button onClick={handleBookService} className="w-full">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  {user ? 'Book Service' : 'Login to Book'}
+                </Button>
+                {hasBiddingSession && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowBiddingRoom(true)} 
+                    className="w-full"
+                  >
+                    💰 Join Bidding Room
+                  </Button>
+                )}
+              </div>
+            )}
+            {isOwnService && (
+              <Button 
+                variant="outline" 
+                onClick={() => setShowBiddingRoom(true)} 
+                className="w-full"
+              >
+                {hasBiddingSession ? '💰 Manage Bidding' : '💰 Enable Bidding'}
               </Button>
             )}
           </div>
@@ -177,6 +215,15 @@ export const SkillDetailPage = () => {
           </Card>
         )}
       </div>
+
+      {showBiddingRoom && (
+        <BiddingChatRoom
+          listingId={service.id}
+          listingType="service"
+          listing={service}
+          onClose={() => setShowBiddingRoom(false)}
+        />
+      )}
     </MainLayout>
   );
 };

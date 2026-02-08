@@ -14,6 +14,9 @@ import {
   TransactionsPage,
   ChatPage,
   ProfilePage,
+  SettingsPage,
+  NotificationsPage,
+  WalletPage,
   ItemDetailPage,
   ForgotPasswordPage,
   SkillMarketplacePage,
@@ -57,6 +60,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <ItemDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wallet"
+            element={
+              <ProtectedRoute>
+                <WalletPage />
               </ProtectedRoute>
             }
           />
@@ -105,6 +124,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <ChatPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
               </ProtectedRoute>
             }
           />

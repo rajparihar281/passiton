@@ -5,4 +5,6 @@ export { transactionService } from './transaction.service';
 export { chatService, collegeService } from './chat.service';
 export { notificationService } from './notification.service';
 export { skillService } from './skill.service';
+export { profileService } from './profile.service';
+export { bookingService } from './booking.service';
 export { default as apiClient } from './api';

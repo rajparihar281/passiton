@@ -9,13 +9,16 @@ export { OfferSkillPage } from './OfferSkillPage';
 export { ManageMySkillsPage } from './ManageMySkillsPage';
 export { BookServicePage } from './BookServicePage';
 export { ServiceBookingsPage } from './ServiceBookingsPage';
+export { ProfilePage } from './ProfilePage';
+export { SettingsPage } from './SettingsPage';
+export { MyItemsPage } from './MyItemsPage';
+export { TransactionsPage } from './TransactionsPage';
+export { ChatPage } from './ChatPage';
+export { NotificationsPage } from './NotificationsPage';
+export { WalletPage } from './WalletPage';
 export {
-  MyItemsPage,
   MyRequestsPage,
   ReceivedRequestsPage,
-  TransactionsPage,
-  ChatPage,
-  ProfilePage,
   ItemDetailPage,
   ForgotPasswordPage,
 } from './PlaceholderPages';

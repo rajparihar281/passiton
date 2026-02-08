@@ -16,4 +16,9 @@ export const notificationService = {
     const response = await apiClient.patch('/api/notifications/mark-all-read');
     return response.data;
   },
+
+  deleteNotification: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await apiClient.delete(`/api/notifications/${id}`);
+    return response.data;
+  },
 };

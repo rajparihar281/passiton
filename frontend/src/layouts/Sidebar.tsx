@@ -132,9 +132,9 @@ export const Sidebar = () => {
             </Link>
             
             <Link
-              to="/my-listings"
+              to="/my-items"
               className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
-                isActive('/my-listings') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'
+                isActive('/my-items') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <Package className="w-5 h-5 transition-transform duration-300 hover:scale-110" />

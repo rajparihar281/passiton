@@ -68,6 +68,15 @@ export const getProfile = async (req, res, next) => {
   }
 };
 
+export const getMyProfile = async (req, res, next) => {
+  try {
+    const profile = await profileService.getMyProfile(req.user.id);
+    res.json({ success: true, data: profile });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateProfile = async (req, res, next) => {
   try {
     const profile = await profileService.updateProfile(req.user.id, req.body);
@@ -81,6 +90,24 @@ export const getProfileReviews = async (req, res, next) => {
   try {
     const reviews = await profileService.getProfileReviews(req.params.id);
     res.json({ success: true, data: reviews });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMyServiceBookings = async (req, res, next) => {
+  try {
+    const bookings = await profileService.getMyServiceBookings(req.user.id);
+    res.json({ success: true, data: bookings });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMyResourceBookings = async (req, res, next) => {
+  try {
+    const bookings = await profileService.getMyResourceBookings(req.user.id);
+    res.json({ success: true, data: bookings });
   } catch (error) {
     next(error);
   }

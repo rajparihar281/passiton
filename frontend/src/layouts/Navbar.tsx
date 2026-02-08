@@ -50,13 +50,13 @@ export const Navbar = () => {
 
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="relative text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to="/notifications" className="relative text-gray-700 hover:text-blue-600 transition-colors">
               <Bell className="w-6 h-6" />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                 3
               </span>
-            </button>
-            <Link to={`/profile/${profile?.id}`} className="flex items-center space-x-2">
+            </Link>
+            <Link to="/profile" className="flex items-center space-x-2">
               <Avatar
                 src={profile?.avatar_url}
                 alt={profile?.full_name || 'User'}
@@ -125,7 +125,14 @@ export const Navbar = () => {
               Transactions
             </Link>
             <Link
-              to={`/profile/${profile?.id}`}
+              to="/notifications"
+              className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Notifications
+            </Link>
+            <Link
+              to="/profile"
               className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
               onClick={() => setMobileMenuOpen(false)}
             >

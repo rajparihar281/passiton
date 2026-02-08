@@ -4,7 +4,7 @@ import { Briefcase, ShoppingBag, Plus, List } from 'lucide-react';
 import { MainLayout } from '../layouts/MainLayout';
 
 export const DashboardPage = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const [activeSection, setActiveSection] = useState<'service' | 'resources'>('service');
   const [startX, setStartX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -100,7 +100,7 @@ export const DashboardPage = () => {
           onMouseLeave={() => setIsDragging(false)}
         >
           <div className={`transition-all duration-500 ease-in-out ${
-            activeSection === 'service' ? 'opacity-100 translate-x-0 relative' : 'opacity-0 -translate-x-full absolute pointer-events-none'
+            activeSection === 'service' ? 'opacity-100 translate-x-0 relative' : 'opacity-0 -translate-x-full absolute pointer-events-none invisible'
           }`}>
             <h2 className="text-2xl font-bold mb-6 animate-slideDown text-[#9333ea]">Skill Economy</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -143,14 +143,14 @@ export const DashboardPage = () => {
             </div>
           </div>
           <div className={`transition-all duration-500 ease-in-out ${
-            activeSection === 'resources' ? 'opacity-100 translate-x-0 relative' : 'opacity-0 translate-x-full absolute pointer-events-none'
+            activeSection === 'resources' ? 'opacity-100 translate-x-0 relative' : 'opacity-0 translate-x-full absolute pointer-events-none invisible'
           }`}>
             <h2 className="text-2xl font-bold mb-6 animate-slideDown text-[#e05226]">Item Economy</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
                 onClick={() => navigate('/browse')}
                 className="p-6 bg-[#e05226]/10 hover:bg-[#e05226]/20 rounded-lg text-left transition-all duration-300 transform hover:scale-105 hover:shadow-md animate-fadeInUp"
-                style={{ animationDelay: '0.1s' }}
+                style={{ animationDelay: '0.2s' }}
               >
                 <ShoppingBag className="w-8 h-8 text-[#e05226] mb-2 transition-transform duration-300 hover:scale-110" />
                 <h3 className="font-semibold text-lg mb-1">Browse Items</h3>

@@ -99,13 +99,13 @@ export const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-12 animate-fadeIn">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8 animate-fadeInUp">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Package className="w-16 h-16 text-blue-600" />
+            <Package className="w-16 h-16 text-blue-600 transition-transform duration-300 hover:scale-110" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Join PassItOn</h1>
+          <h1 className="text-3xl font-bold text-gray-900 animate-slideDown">Join PassItOn</h1>
           <p className="text-gray-600 mt-2">Create your account</p>
         </div>
 
@@ -182,7 +182,7 @@ export const SignupPage = () => {
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+            <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
               Login
             </Link>
           </p>

@@ -1,5 +1,5 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Home, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Home, Package, ChevronLeft, ChevronRight, Briefcase, ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 
 export const Sidebar = () => {
@@ -39,6 +39,24 @@ export const Sidebar = () => {
         >
           <Home className="w-5 h-5" />
           {!collapsed && <span>Dashboard</span>}
+        </Link>
+        <Link
+          to="/browse"
+          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-colors ${
+            isActive('/browse') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          <ShoppingBag className="w-5 h-5" />
+          {!collapsed && <span>Browse Items</span>}
+        </Link>
+        <Link
+          to="/skills"
+          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-colors ${
+            isActive('/skills') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          <Briefcase className="w-5 h-5" />
+          {!collapsed && <span>Browse Skills</span>}
         </Link>
       </nav>
     </aside>

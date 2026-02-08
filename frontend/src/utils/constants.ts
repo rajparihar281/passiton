@@ -45,6 +45,34 @@ export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 export const MAX_IMAGES_PER_ITEM = 5;
 
+export const SERVICE_CATEGORIES = [
+  'Tutoring',
+  'Photography',
+  'Graphic Design',
+  'Web Development',
+  'Content Writing',
+  'Video Editing',
+  'Music Lessons',
+  'Fitness Training',
+  'Language Teaching',
+  'Event Planning',
+  'Other',
+];
+
+export const PRICING_MODELS = [
+  { value: 'hourly', label: 'Hourly Rate' },
+  { value: 'flat_fee', label: 'Flat Fee' },
+  { value: 'negotiable', label: 'Negotiable' },
+];
+
+export const BOOKING_STATUSES = {
+  PENDING: 'pending',
+  ACCEPTED: 'accepted',
+  REJECTED: 'rejected',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+};
+
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
@@ -64,4 +92,9 @@ export const ROUTES = {
   EDIT_PROFILE: '/profile/edit',
   CHAT: '/chat',
   CHAT_CONVERSATION: '/chat/:id',
+  SKILLS: '/skills',
+  SKILL_DETAIL: '/skills/:id',
+  CREATE_SKILL: '/skills/create',
+  MY_SKILLS: '/my-skills',
+  SKILL_BOOKINGS: '/skill-bookings',
 };

@@ -16,6 +16,12 @@ import {
   ProfilePage,
   ItemDetailPage,
   ForgotPasswordPage,
+  SkillMarketplacePage,
+  SkillDetailPage,
+  OfferSkillPage,
+  ManageMySkillsPage,
+  BookServicePage,
+  ServiceBookingsPage,
 } from './pages';
 
 function App() {
@@ -107,6 +113,56 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Skill Economy Routes */}
+          <Route
+            path="/skills"
+            element={
+              <ProtectedRoute>
+                <SkillMarketplacePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/skills/create"
+            element={
+              <ProtectedRoute>
+                <OfferSkillPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/skills/:id"
+            element={
+              <ProtectedRoute>
+                <SkillDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/skills/:id/book"
+            element={
+              <ProtectedRoute>
+                <BookServicePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-skills"
+            element={
+              <ProtectedRoute>
+                <ManageMySkillsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/skill-bookings"
+            element={
+              <ProtectedRoute>
+                <ServiceBookingsPage />
               </ProtectedRoute>
             }
           />

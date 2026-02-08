@@ -33,29 +33,29 @@ export const Sidebar = () => {
       <nav className="flex-1 p-4 space-y-2">
         <Link
           to="/dashboard"
-          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-colors ${
-            isActive('/dashboard') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
+            isActive('/dashboard') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
-          <Home className="w-5 h-5" />
+          <Home className="w-5 h-5 transition-transform duration-300 hover:scale-110" />
           {!collapsed && <span>Dashboard</span>}
         </Link>
         <Link
           to="/browse"
-          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-colors ${
-            isActive('/browse') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
+            isActive('/browse') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
-          <ShoppingBag className="w-5 h-5" />
+          <ShoppingBag className="w-5 h-5 transition-transform duration-300 hover:scale-110" />
           {!collapsed && <span>Browse Items</span>}
         </Link>
         <Link
           to="/skills"
-          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-colors ${
-            isActive('/skills') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
+            isActive('/skills') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
-          <Briefcase className="w-5 h-5" />
+          <Briefcase className="w-5 h-5 transition-transform duration-300 hover:scale-110" />
           {!collapsed && <span>Browse Skills</span>}
         </Link>
       </nav>
@@ -63,20 +63,20 @@ export const Sidebar = () => {
       <div className="p-4 border-t space-y-2">
         <Link
           to="/login"
-          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-colors ${
-            isActive('/login') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
+            isActive('/login') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
-          <LogIn className="w-5 h-5" />
+          <LogIn className="w-5 h-5 transition-transform duration-300 hover:scale-110" />
           {!collapsed && <span>Login</span>}
         </Link>
         <Link
           to="/signup"
-          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-colors ${
-            isActive('/signup') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+          className={`flex items-center ${collapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
+            isActive('/signup') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
-          <UserPlus className="w-5 h-5" />
+          <UserPlus className="w-5 h-5 transition-transform duration-300 hover:scale-110" />
           {!collapsed && <span>Sign Up</span>}
         </Link>
       </div>

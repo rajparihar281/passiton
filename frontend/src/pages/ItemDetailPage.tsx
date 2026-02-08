@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { DollarSign, User, Package } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { MainLayout } from '../layouts/MainLayout';
-import { Button, Spinner, Card, Badge } from '../components';
+import { Button, Spinner, Card, Badge, BorrowRequestModal } from '../components';
 import { itemService } from '../services';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,6 +13,7 @@ export const ItemDetailPage = () => {
   const { user } = useAuth();
   const [item, setItem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showBorrowModal, setShowBorrowModal] = useState(false);
 
   useEffect(() => {
     loadItem();
@@ -37,8 +38,7 @@ export const ItemDetailPage = () => {
       navigate('/login');
       return;
     }
-    // Navigate to borrow request page (would need to be created)
-    toast.info('Borrow request functionality coming soon');
+    setShowBorrowModal(true);
   };
 
   if (loading) {
@@ -139,6 +139,16 @@ export const ItemDetailPage = () => {
           <p className="text-gray-700 whitespace-pre-wrap">{item.description}</p>
         </Card>
       </div>
+
+      <BorrowRequestModal
+        isOpen={showBorrowModal}
+        onClose={() => setShowBorrowModal(false)}
+        item={item}
+        onSuccess={() => {
+          toast.success('Request sent! Check your bookings page.');
+          setShowBorrowModal(false);
+        }}
+      />
     </MainLayout>
   );
 };

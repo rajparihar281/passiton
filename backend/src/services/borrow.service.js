@@ -201,10 +201,7 @@ export const borrowService = {
     const { data, error } = await supabase
       .from('borrow_requests')
       .update({ 
-        status: 'cancelled',
-        cancelled_by: borrowerId,
-        cancelled_at: new Date().toISOString(),
-        cancellation_reason: reason
+        status: 'cancelled'
       })
       .eq('id', requestId)
       .select(`

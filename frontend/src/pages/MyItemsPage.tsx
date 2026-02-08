@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Plus, Package, Edit, Trash2, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { MainLayout } from '../layouts/MainLayout';
 import { itemService } from '../services';
-import { Button } from '../components/Button';
+import { Button, EditListingModal, DeleteConfirmationModal } from '../components';
 
 interface Item {
   id: string;
@@ -18,6 +20,8 @@ interface Item {
 export const MyItemsPage = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [deletingItem, setDeletingItem] = useState<Item | null>(null);
 
   useEffect(() => {
     const fetchMyItems = async () => {
@@ -36,23 +40,52 @@ export const MyItemsPage = () => {
     fetchMyItems();
   }, []);
 
+  const handleDelete = async (itemId: string) => {
+    try {
+      const response = await itemService.deleteItem(itemId);
+      if (response.success) {
+        setItems(items.filter(item => item.id !== itemId));
+        toast.success('Item deleted successfully');
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to delete item');
+    }
+    setDeletingItem(null);
+  };
+
+  const handleUpdate = async (itemId: string, updates: any) => {
+    try {
+      const response = await itemService.updateItem(itemId, updates);
+      if (response.success) {
+        setItems(items.map(item => item.id === itemId ? { ...item, ...updates } : item));
+        toast.success('Item updated successfully');
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to update item');
+    }
+    setEditingItem(null);
+  };
+
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-48"></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="bg-gray-200 h-64 rounded-lg"></div>
-            ))}
+      <MainLayout>
+        <div className="max-w-6xl mx-auto p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-48"></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="bg-gray-200 h-64 rounded-lg"></div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </MainLayout>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <MainLayout>
+      <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">My Items</h1>
         <Link to="/items/create">
@@ -109,11 +142,21 @@ export const MyItemsPage = () => {
                       <span>View</span>
                     </Button>
                   </Link>
-                  <Button variant="outline" size="sm" className="flex items-center space-x-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex items-center space-x-1"
+                    onClick={() => setEditingItem(item)}
+                  >
                     <Edit className="w-4 h-4" />
                     <span>Edit</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="text-red-600 hover:bg-red-50">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-red-600 hover:bg-red-50"
+                    onClick={() => setDeletingItem(item)}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -122,6 +165,27 @@ export const MyItemsPage = () => {
           ))}
         </div>
       )}
-    </div>
+      </div>
+
+      {editingItem && (
+        <EditListingModal
+          isOpen={true}
+          onClose={() => setEditingItem(null)}
+          listing={editingItem}
+          type="item"
+          onUpdate={(updates) => handleUpdate(editingItem.id, updates)}
+        />
+      )}
+
+      {deletingItem && (
+        <DeleteConfirmationModal
+          isOpen={true}
+          onClose={() => setDeletingItem(null)}
+          onConfirm={() => handleDelete(deletingItem.id)}
+          title={`Delete ${deletingItem.title}`}
+          message="Are you sure you want to delete this item? This action cannot be undone."
+        />
+      )}
+    </MainLayout>
   );
 };

@@ -43,12 +43,13 @@ export const BrowsePage = () => {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6 animate-fadeIn">
+        <div className="flex items-center justify-between animate-slideDown">
           <h1 className="text-3xl font-bold text-gray-900">Browse Items</h1>
           <Button
             variant="ghost"
             onClick={() => setShowFilters(!showFilters)}
+            className="transition-all duration-300 hover:scale-105"
           >
             <Filter className="w-5 h-5 mr-2" />
             Filters
@@ -56,19 +57,19 @@ export const BrowsePage = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="relative">
+        <div className="relative animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
             placeholder="Search items..."
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
 
         {/* Filters */}
         {showFilters && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-6 rounded-lg shadow-md animate-fadeInUp transition-all duration-300">
             <h3 className="text-lg font-semibold mb-4">Filters</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -78,7 +79,7 @@ export const BrowsePage = () => {
                 <select
                   value={filters.category || ''}
                   onChange={(e) => setFilters({ ...filters, category: e.target.value || undefined })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
                 >
                   <option value="">All Categories</option>
                   {ITEM_CATEGORIES.map((cat) => (
@@ -96,7 +97,7 @@ export const BrowsePage = () => {
                 <select
                   value={filters.condition || ''}
                   onChange={(e) => setFilters({ ...filters, condition: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
                 >
                   <option value="">All Conditions</option>
                   {ITEM_CONDITIONS.map((cond) => (
@@ -114,7 +115,7 @@ export const BrowsePage = () => {
                 <select
                   value={filters.is_available ? 'true' : 'false'}
                   onChange={(e) => setFilters({ ...filters, is_available: e.target.value === 'true' })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
                 >
                   <option value="true">Available Only</option>
                   <option value="false">All Items</option>
@@ -126,6 +127,7 @@ export const BrowsePage = () => {
               <Button
                 variant="ghost"
                 onClick={() => setFilters({ search: '', category: '', condition: undefined, is_available: true })}
+                className="transition-all duration-300 hover:scale-105"
               >
                 Clear Filters
               </Button>
@@ -140,8 +142,10 @@ export const BrowsePage = () => {
           </div>
         ) : items.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((item) => (
-              <ItemCard key={item.id} item={item} />
+            {items.map((item, index) => (
+              <div key={item.id} className="animate-fadeInUp" style={{ animationDelay: `${index * 0.1}s` }}>
+                <ItemCard item={item} />
+              </div>
             ))}
           </div>
         ) : (

@@ -52,13 +52,13 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 animate-fadeIn">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8 animate-fadeInUp">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Package className="w-16 h-16 text-blue-600" />
+            <Package className="w-16 h-16 text-blue-600 transition-transform duration-300 hover:scale-110" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
+          <h1 className="text-3xl font-bold text-gray-900 animate-slideDown">Welcome Back</h1>
           <p className="text-gray-600 mt-2">Login to PassItOn</p>
         </div>
 
@@ -88,7 +88,7 @@ export const LoginPage = () => {
               <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
               <span className="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
-            <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
+            <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200">
               Forgot password?
             </Link>
           </div>
@@ -101,7 +101,7 @@ export const LoginPage = () => {
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
+            <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
               Sign up
             </Link>
           </p>

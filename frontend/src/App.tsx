@@ -9,6 +9,8 @@ import {
   BrowsePage,
   CreateItemPage,
   MyItemsPage,
+  MyListingsPage,
+  MyBookingsPage,
   MyRequestsPage,
   ReceivedRequestsPage,
   TransactionsPage,
@@ -75,6 +77,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <WalletPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-listings"
+            element={
+              <ProtectedRoute>
+                <MyListingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-bookings"
+            element={
+              <ProtectedRoute>
+                <MyBookingsPage />
               </ProtectedRoute>
             }
           />

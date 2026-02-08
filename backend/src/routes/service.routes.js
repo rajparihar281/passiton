@@ -30,6 +30,6 @@ router.put('/:id', authMiddleware, updateService);
 
 router.delete('/:id', authMiddleware, deleteService);
 
-router.patch('/:id/active', authMiddleware, toggleActive);
+router.patch('/:id/toggle-active', authMiddleware, toggleActive);
 
 export default router;

@@ -1,4 +1,5 @@
 import supabase from '../config/supabase.js';
+import { notificationService } from './notification.service.js';
 
 export const bookingService = {
   async createBooking(bookingData, clientId) {
@@ -109,5 +110,61 @@ export const bookingService = {
 
     if (error) throw error;
     return data;
+  },
+
+  async cancelBooking(bookingId, userId, reason = null) {
+    // Check if user is authorized to cancel
+    const { data: booking, error: checkError } = await supabase
+      .from('service_bookings')
+      .select('client_id, provider_id, status, service_id')
+      .eq('id', bookingId)
+      .single();
+
+    if (checkError) throw checkError;
+
+    if (booking.client_id !== userId && booking.provider_id !== userId) {
+      throw new Error('Unauthorized to cancel this booking');
+    }
+
+    if (booking.status === 'completed' || booking.status === 'cancelled') {
+      throw new Error('Cannot cancel completed or already cancelled booking');
+    }
+
+    // Update booking status
+    const { data: updatedBooking, error } = await supabase
+      .from('service_bookings')
+      .update({ 
+        status: 'cancelled',
+        cancelled_by: userId,
+        cancelled_at: new Date().toISOString(),
+        cancellation_reason: reason
+      })
+      .eq('id', bookingId)
+      .select(`
+        *,
+        service:services(title),
+        provider:profiles!provider_id(full_name),
+        client:profiles!client_id(full_name)
+      `)
+      .single();
+
+    if (error) throw error;
+
+    // Send notification to the other party
+    const otherUserId = booking.client_id === userId ? booking.provider_id : booking.client_id;
+    const cancelledBy = booking.client_id === userId ? 'client' : 'provider';
+    
+    try {
+      await notificationService.createNotification(
+        otherUserId,
+        'Booking Cancelled',
+        `A booking for "${updatedBooking.service.title}" has been cancelled by the ${cancelledBy}.${reason ? ` Reason: ${reason}` : ''}`,
+        'warning'
+      );
+    } catch (notificationError) {
+      console.error('Failed to send cancellation notification:', notificationError);
+    }
+
+    return updatedBooking;
   },
 };

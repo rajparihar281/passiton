@@ -21,4 +21,9 @@ export const bookingService = {
     const response = await apiClient.post('/api/bookings', bookingData);
     return response.data;
   },
+
+  cancelBooking: async (id: string, reason?: string): Promise<ApiResponse<any>> => {
+    const response = await apiClient.patch(`/api/bookings/${id}/cancel`, { reason });
+    return response.data;
+  },
 };

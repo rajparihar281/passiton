@@ -54,3 +54,18 @@ export const updateBookingStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+export const cancelBooking = async (req, res, next) => {
+  try {
+    const { reason } = req.body;
+    const booking = await bookingService.cancelBooking(req.params.id, req.user.id, reason);
+
+    res.json({
+      success: true,
+      data: booking,
+      message: 'Booking cancelled successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};

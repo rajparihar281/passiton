@@ -34,7 +34,7 @@ export const skillService = {
   },
 
   async toggleActive(id: string) {
-    const response = await apiClient.patch(`/api/services/${id}/active`);
+    const response = await apiClient.patch(`/api/services/${id}/toggle-active`);
     return response.data;
   },
 

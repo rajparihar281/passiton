@@ -4,6 +4,8 @@ export { borrowService } from './borrow.service';
 export { transactionService } from './transaction.service';
 export { notificationService } from './notification.service';
 export { skillService } from './skill.service';
+export { serviceService } from './service.service';
 export { profileService } from './profile.service';
 export { bookingService } from './booking.service';
+export { unifiedBookingService } from './unified-booking.service';
 export { default as apiClient } from './api';

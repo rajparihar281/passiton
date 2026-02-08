@@ -193,14 +193,37 @@ export const itemService = {
       throw new Error('Unauthorized to delete this item');
     }
 
-    const { error } = await supabase
-      .from('items')
-      .delete()
-      .eq('id', itemId);
+    // Check for active borrow requests or transactions
+    const { data: activeRequests, error: requestError } = await supabase
+      .from('borrow_requests')
+      .select('id')
+      .eq('item_id', itemId)
+      .in('status', ['pending', 'approved'])
+      .limit(1);
 
-    if (error) throw error;
+    if (requestError) throw requestError;
 
-    return { message: 'Item deleted successfully' };
+    if (activeRequests && activeRequests.length > 0) {
+      // Soft delete - mark as unavailable
+      const { data, error } = await supabase
+        .from('items')
+        .update({ is_available: false })
+        .eq('id', itemId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { message: 'Item marked as unavailable due to active requests', soft_delete: true, data };
+    } else {
+      // Hard delete - no active requests
+      const { error } = await supabase
+        .from('items')
+        .delete()
+        .eq('id', itemId);
+
+      if (error) throw error;
+      return { message: 'Item deleted successfully', soft_delete: false };
+    }
   },
 
   async toggleAvailability(itemId, ownerId) {

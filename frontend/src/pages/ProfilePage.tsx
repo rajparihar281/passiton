@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { User, Star, Package, Briefcase, Calendar, MapPin, Mail, Phone } from 'lucide-react';
+import { User, Star, Package, Briefcase, Calendar, MapPin, Mail, Phone, Edit2, Save, X } from 'lucide-react';
 import { profileService } from '../services/profile.service';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 interface ProfileStats {
   total_service_bookings: number;
@@ -38,12 +39,18 @@ interface Booking {
 }
 
 export const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, updateProfile: updateAuthProfile } = useAuth();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [serviceBookings, setServiceBookings] = useState<Booking[]>([]);
   const [resourceBookings, setResourceBookings] = useState<Booking[]>([]);
   const [activeTab, setActiveTab] = useState<'services' | 'resources'>('services');
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    full_name: '',
+    phone: '',
+    bio: ''
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,7 +61,14 @@ export const ProfilePage = () => {
           profileService.getMyResourceBookings(),
         ]);
 
-        if (profileRes.success) setProfile(profileRes.data);
+        if (profileRes.success) {
+          setProfile(profileRes.data);
+          setEditForm({
+            full_name: profileRes.data.full_name || '',
+            phone: profileRes.data.phone || '',
+            bio: profileRes.data.bio || ''
+          });
+        }
         if (serviceRes.success) setServiceBookings(serviceRes.data);
         if (resourceRes.success) setResourceBookings(resourceRes.data);
       } catch (error) {
@@ -66,6 +80,40 @@ export const ProfilePage = () => {
 
     fetchData();
   }, []);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    if (profile) {
+      setEditForm({
+        full_name: profile.full_name || '',
+        phone: profile.phone || '',
+        bio: profile.bio || ''
+      });
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await profileService.updateProfile(editForm);
+      if (response.success) {
+        setProfile(prev => prev ? { ...prev, ...editForm } : null);
+        updateAuthProfile(response.data);
+        setIsEditing(false);
+        toast.success('Profile updated successfully');
+      }
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      toast.error('Failed to update profile');
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setEditForm(prev => ({ ...prev, [field]: value }));
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -118,17 +166,67 @@ export const ProfilePage = () => {
             )}
           </div>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">{profile.full_name || 'Anonymous User'}</h1>
+            <div className="flex items-center justify-between">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editForm.full_name}
+                  onChange={(e) => handleInputChange('full_name', e.target.value)}
+                  className="text-2xl font-bold text-gray-900 border-b-2 border-blue-500 bg-transparent focus:outline-none"
+                  placeholder="Full Name"
+                />
+              ) : (
+                <h1 className="text-2xl font-bold text-gray-900">{profile.full_name || 'Anonymous User'}</h1>
+              )}
+              <div className="flex items-center space-x-2">
+                {isEditing ? (
+                  <>
+                    <button
+                      onClick={handleSave}
+                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                    >
+                      <Save className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={handleEdit}
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+            </div>
             <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
               <div className="flex items-center space-x-1">
                 <Mail className="w-4 h-4" />
                 <span>{profile.email}</span>
               </div>
-              {profile.phone && (
+              {isEditing ? (
                 <div className="flex items-center space-x-1">
                   <Phone className="w-4 h-4" />
-                  <span>{profile.phone}</span>
+                  <input
+                    type="text"
+                    value={editForm.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    className="border-b border-gray-300 bg-transparent focus:outline-none focus:border-blue-500"
+                    placeholder="Phone number"
+                  />
                 </div>
+              ) : (
+                profile.phone && (
+                  <div className="flex items-center space-x-1">
+                    <Phone className="w-4 h-4" />
+                    <span>{profile.phone}</span>
+                  </div>
+                )
               )}
               {profile.college && (
                 <div className="flex items-center space-x-1">
@@ -137,8 +235,18 @@ export const ProfilePage = () => {
                 </div>
               )}
             </div>
-            {profile.bio && (
-              <p className="mt-3 text-gray-700">{profile.bio}</p>
+            {isEditing ? (
+              <textarea
+                value={editForm.bio}
+                onChange={(e) => handleInputChange('bio', e.target.value)}
+                className="mt-3 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={3}
+                placeholder="Tell us about yourself..."
+              />
+            ) : (
+              (profile.bio || isEditing) && (
+                <p className="mt-3 text-gray-700">{profile.bio || 'No bio provided'}</p>
+              )
             )}
             <div className="flex items-center space-x-4 mt-4">
               <div className="flex items-center space-x-1">

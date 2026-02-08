@@ -19,6 +19,7 @@ import notificationRoutes from "./routes/notification.routes.js";
 import testRoutes from "./routes/test.routes.js";
 import serviceRoutes from "./routes/service.routes.js";
 import bookingRoutes from "./routes/booking.routes.js";
+import unifiedBookingRoutes from "./routes/unified-booking.routes.js";
 import { errorHandler, notFound } from "./middleware/error.middleware.js";
 
 const app = express();
@@ -65,6 +66,7 @@ app.get("/", (req, res) => {
       notifications: "/api/notifications",
       services: "/api/services",
       bookings: "/api/bookings",
+      unifiedBookings: "/api/unified-bookings",
     },
   });
 });
@@ -81,6 +83,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/unified-bookings", unifiedBookingRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -32,8 +32,8 @@ export const borrowService = {
     return response.data;
   },
 
-  cancelRequest: async (id: string): Promise<ApiResponse<BorrowRequest>> => {
-    const response = await apiClient.patch(`/api/borrow-requests/${id}/cancel`);
+  cancelRequest: async (id: string, reason?: string): Promise<ApiResponse<BorrowRequest>> => {
+    const response = await apiClient.patch(`/api/borrow-requests/${id}/cancel`, { reason });
     return response.data;
   },
 };

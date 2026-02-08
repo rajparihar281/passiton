@@ -1,4 +1,5 @@
 import supabase from '../config/supabase.js';
+import { notificationService } from './notification.service.js';
 
 export const borrowService = {
   async createRequest({ item_id, borrower_id, start_date, end_date, message }) {
@@ -38,6 +39,18 @@ export const borrowService = {
       .single();
 
     if (error) throw error;
+
+    // Notify owner about new borrow request
+    try {
+      await notificationService.createNotification(
+        item.owner_id,
+        'New Borrow Request',
+        `Someone wants to borrow your item. Check your received requests.`,
+        'info'
+      );
+    } catch (notificationError) {
+      console.error('Failed to send borrow request notification:', notificationError);
+    }
 
     return data;
   },
@@ -168,10 +181,10 @@ export const borrowService = {
     return data;
   },
 
-  async cancelRequest(requestId, borrowerId) {
+  async cancelRequest(requestId, borrowerId, reason = null) {
     const { data: request, error: checkError } = await supabase
       .from('borrow_requests')
-      .select('borrower_id, status')
+      .select('borrower_id, owner_id, status, item_id')
       .eq('id', requestId)
       .single();
 
@@ -181,18 +194,47 @@ export const borrowService = {
       throw new Error('Unauthorized');
     }
 
-    if (request.status !== 'pending') {
+    if (request.status !== 'pending' && request.status !== 'approved') {
       throw new Error('Cannot cancel processed request');
     }
 
     const { data, error } = await supabase
       .from('borrow_requests')
-      .update({ status: 'cancelled' })
+      .update({ 
+        status: 'cancelled',
+        cancelled_by: borrowerId,
+        cancelled_at: new Date().toISOString(),
+        cancellation_reason: reason
+      })
       .eq('id', requestId)
-      .select()
+      .select(`
+        *,
+        item:items(title),
+        owner:profiles!owner_id(full_name)
+      `)
       .single();
 
     if (error) throw error;
+
+    // If approved request is cancelled, make item available again
+    if (request.status === 'approved') {
+      await supabase
+        .from('items')
+        .update({ is_available: true })
+        .eq('id', request.item_id);
+    }
+
+    // Notify owner
+    try {
+      await notificationService.createNotification(
+        request.owner_id,
+        'Borrow Request Cancelled',
+        `A borrow request for "${data.item.title}" has been cancelled by the borrower.${reason ? ` Reason: ${reason}` : ''}`,
+        'warning'
+      );
+    } catch (notificationError) {
+      console.error('Failed to send cancellation notification:', notificationError);
+    }
 
     return data;
   },

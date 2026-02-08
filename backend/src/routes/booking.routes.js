@@ -1,6 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { createBooking, getMyBookings, getBookingById, updateBookingStatus } from '../controllers/booking.controller.js';
+import { createBooking, getMyBookings, getBookingById, updateBookingStatus, cancelBooking } from '../controllers/booking.controller.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validation.middleware.js';
 
@@ -30,6 +30,16 @@ router.patch(
     validate,
   ],
   updateBookingStatus
+);
+
+router.patch(
+  '/:id/cancel',
+  authMiddleware,
+  [
+    body('reason').optional().isString().withMessage('Reason must be a string'),
+    validate,
+  ],
+  cancelBooking
 );
 
 export default router;

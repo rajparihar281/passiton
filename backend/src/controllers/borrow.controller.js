@@ -91,7 +91,8 @@ export const rejectRequest = async (req, res, next) => {
 
 export const cancelRequest = async (req, res, next) => {
   try {
-    const request = await borrowService.cancelRequest(req.params.id, req.user.id);
+    const { reason } = req.body;
+    const request = await borrowService.cancelRequest(req.params.id, req.user.id, reason);
 
     res.json({
       success: true,

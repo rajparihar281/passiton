@@ -37,12 +37,8 @@ export const itemService = {
     return response.data;
   },
 
-  updateItem: async (id: string, formData: FormData): Promise<ApiResponse<Item>> => {
-    const response = await apiClient.put(`/api/items/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  updateItem: async (id: string, data: any): Promise<ApiResponse<Item>> => {
+    const response = await apiClient.put(`/api/items/${id}`, data);
     return response.data;
   },
 

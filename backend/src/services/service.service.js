@@ -1,4 +1,5 @@
 import supabase from '../config/supabase.js';
+import { notificationService } from './notification.service.js';
 
 export const serviceService = {
   async createService(serviceData, providerId) {
@@ -103,47 +104,15 @@ export const serviceService = {
       throw error;
     }
 
-    // Safely fetch reviews separately
+    // Safely fetch reviews separately - disabled due to schema issues
     let servicesWithRatings = services;
     if (services && services.length > 0) {
-      try {
-        const serviceIds = services.map(s => s.id);
-        const { data: reviews, error: reviewError } = await supabase
-          .from('service_reviews')
-          .select('service_id, rating')
-          .in('service_id', serviceIds);
-
-        if (!reviewError && reviews) {
-          // Merge reviews with services
-          servicesWithRatings = services.map(service => {
-            const serviceReviews = reviews.filter(r => r.service_id === service.id);
-            const ratings = serviceReviews.map(r => r.rating);
-            const avgRating = ratings.length > 0 
-              ? ratings.reduce((a, b) => a + b, 0) / ratings.length 
-              : 0;
-            return {
-              ...service,
-              average_rating: avgRating,
-              review_count: ratings.length,
-            };
-          });
-        } else {
-          console.warn('Reviews fetch failed, returning services without ratings:', reviewError?.message);
-          // Return services with default rating values
-          servicesWithRatings = services.map(service => ({
-            ...service,
-            average_rating: 0,
-            review_count: 0,
-          }));
-        }
-      } catch (reviewFetchError) {
-        console.warn('Review fetch error, continuing without reviews:', reviewFetchError.message);
-        servicesWithRatings = services.map(service => ({
-          ...service,
-          average_rating: 0,
-          review_count: 0,
-        }));
-      }
+      // Return services with default rating values for now
+      servicesWithRatings = services.map(service => ({
+        ...service,
+        average_rating: 0,
+        review_count: 0,
+      }));
     }
 
     return {
@@ -171,46 +140,14 @@ export const serviceService = {
       throw error;
     }
 
-    // Safely fetch reviews separately
-    try {
-      const { data: reviews, error: reviewError } = await supabase
-        .from('service_reviews')
-        .select(`
-          *,
-          reviewer:profiles!reviewer_id(full_name, avatar_url)
-        `)
-        .eq('service_id', serviceId);
-
-      if (!reviewError && reviews) {
-        const ratings = reviews.map(r => r.rating);
-        const avgRating = ratings.length > 0 
-          ? ratings.reduce((a, b) => a + b, 0) / ratings.length 
-          : 0;
-
-        return {
-          ...service,
-          reviews,
-          average_rating: avgRating,
-          review_count: ratings.length,
-        };
-      } else {
-        console.warn('Reviews fetch failed for service:', serviceId, reviewError?.message);
-        return {
-          ...service,
-          reviews: [],
-          average_rating: 0,
-          review_count: 0,
-        };
-      }
-    } catch (reviewFetchError) {
-      console.warn('Review fetch error for service:', serviceId, reviewFetchError.message);
-      return {
-        ...service,
-        reviews: [],
-        average_rating: 0,
-        review_count: 0,
-      };
-    }
+    // Safely fetch reviews separately - disabled due to schema issues
+    console.warn('Reviews fetch disabled for service:', serviceId);
+    return {
+      ...service,
+      reviews: [],
+      average_rating: 0,
+      review_count: 0,
+    };
   },
 
   async getMyServices(providerId) {
@@ -260,7 +197,7 @@ export const serviceService = {
   async deleteService(serviceId, providerId) {
     const { data: service, error: checkError } = await supabase
       .from('services')
-      .select('provider_id')
+      .select('provider_id, title')
       .eq('id', serviceId)
       .single();
 
@@ -270,13 +207,93 @@ export const serviceService = {
       throw new Error('Unauthorized to delete this service');
     }
 
-    const { error } = await supabase
-      .from('services')
-      .delete()
-      .eq('id', serviceId);
+    // Check for active bookings
+    const { data: activeBookings, error: bookingError } = await supabase
+      .from('service_bookings')
+      .select('id, client_id')
+      .eq('service_id', serviceId)
+      .in('status', ['pending', 'accepted'])
+      .limit(10);
+
+    if (bookingError) throw bookingError;
+
+    if (activeBookings && activeBookings.length > 0) {
+      // Soft delete - mark as inactive
+      const { data, error } = await supabase
+        .from('services')
+        .update({ is_active: false })
+        .eq('id', serviceId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Notify affected users
+      try {
+        const notificationPromises = activeBookings.map(booking => 
+          notificationService.createNotification(
+            booking.client_id,
+            'Service Unavailable',
+            `The service "${service.title}" you have booked is no longer available. Please contact the provider for more information.`,
+            'warning'
+          )
+        );
+        await Promise.all(notificationPromises);
+      } catch (notificationError) {
+        console.error('Failed to send service deletion notifications:', notificationError);
+      }
+
+      return { message: 'Service deactivated due to active bookings', soft_delete: true, data };
+    } else {
+      // Hard delete - no active bookings
+      const { error } = await supabase
+        .from('services')
+        .delete()
+        .eq('id', serviceId);
+
+      if (error) throw error;
+      return { message: 'Service deleted successfully', soft_delete: false };
+    }
+  },
+
+  async cancelBooking(bookingId, userId, reason = null) {
+    // Check if user is authorized to cancel
+    const { data: booking, error: checkError } = await supabase
+      .from('service_bookings')
+      .select('client_id, provider_id, status, service_id')
+      .eq('id', bookingId)
+      .single();
+
+    if (checkError) throw checkError;
+
+    if (booking.client_id !== userId && booking.provider_id !== userId) {
+      throw new Error('Unauthorized to cancel this booking');
+    }
+
+    if (booking.status === 'completed' || booking.status === 'cancelled') {
+      throw new Error('Cannot cancel completed or already cancelled booking');
+    }
+
+    // Update booking status
+    const { data: updatedBooking, error } = await supabase
+      .from('service_bookings')
+      .update({ 
+        status: 'cancelled',
+        cancelled_by: userId,
+        cancelled_at: new Date().toISOString(),
+        cancellation_reason: reason
+      })
+      .eq('id', bookingId)
+      .select(`
+        *,
+        service:services(title),
+        provider:profiles!provider_id(full_name),
+        client:profiles!client_id(full_name)
+      `)
+      .single();
 
     if (error) throw error;
-    return { message: 'Service deleted successfully' };
+    return updatedBooking;
   },
 
   async toggleActive(serviceId, providerId) {

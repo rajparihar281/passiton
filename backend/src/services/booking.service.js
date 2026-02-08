@@ -39,6 +39,19 @@ export const bookingService = {
       .single();
 
     if (error) throw error;
+
+    // Notify provider about new booking
+    try {
+      await notificationService.createNotification(
+        service.provider_id,
+        'New Service Booking',
+        `You have received a new booking request for your service.`,
+        'info'
+      );
+    } catch (notificationError) {
+      console.error('Failed to send booking notification:', notificationError);
+    }
+
     return booking;
   },
 

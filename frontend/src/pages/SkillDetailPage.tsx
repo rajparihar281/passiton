@@ -32,6 +32,11 @@ export const SkillDetailPage = () => {
   };
 
   const handleBookService = () => {
+    if (!user) {
+      toast.error('Please login to book this service');
+      navigate('/login');
+      return;
+    }
     navigate(`/skills/${id}/book`);
   };
 
@@ -135,7 +140,7 @@ export const SkillDetailPage = () => {
             {!isOwnService && (
               <Button onClick={handleBookService} className="w-full">
                 <Calendar className="w-5 h-5 mr-2" />
-                Book Service
+                {user ? 'Book Service' : 'Login to Book'}
               </Button>
             )}
           </div>

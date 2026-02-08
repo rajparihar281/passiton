@@ -40,6 +40,18 @@ export const borrowService = {
 
     if (error) throw error;
 
+    // Notify owner about new borrow request
+    try {
+      await notificationService.createNotification(
+        item.owner_id,
+        'New Borrow Request',
+        `Someone wants to borrow your item. Check your received requests.`,
+        'info'
+      );
+    } catch (notificationError) {
+      console.error('Failed to send borrow request notification:', notificationError);
+    }
+
     return data;
   },
 

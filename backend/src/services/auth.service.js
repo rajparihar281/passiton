@@ -32,10 +32,12 @@ export const authService = {
 
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .insert({
+      .upsert({
         id: userId,
         full_name,
         college_id,
+      }, {
+        onConflict: 'id'
       })
       .select()
       .single();

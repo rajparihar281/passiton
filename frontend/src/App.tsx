@@ -38,8 +38,20 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/browse" element={<BrowsePage />} />
+          <Route path="/skills" element={<SkillMarketplacePage />} />
+          <Route path="/skills/:id" element={<SkillDetailPage />} />
+          <Route path="/items/:id" element={<ItemDetailPage />} />
 
           {/* Protected Routes */}
+          <Route
+            path="/skills/:id/book"
+            element={
+              <ProtectedRoute>
+                <BookServicePage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/browse"
             element={

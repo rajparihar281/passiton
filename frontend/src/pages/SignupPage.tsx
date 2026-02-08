@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { Button, Input } from '../components';
 import { validateEmail, validatePassword } from '../utils/helpers';
+import apiClient from '../services/api';
 
 import type { College } from '../types';
 
@@ -32,13 +33,13 @@ export const SignupPage = () => {
     try {
       console.log('🏫 Loading colleges...');
       setCollegesLoading(true);
-      const response = await collegeService.getColleges();
-      console.log('📡 College API response:', response);
-      if (response.success && response.data) {
-        console.log(`✅ Loaded ${response.data.length} colleges:`, response.data);
-        setColleges(response.data);
+      const response = await apiClient.get('/api/colleges');
+      console.log('📡 College API response:', response.data);
+      if (response.data.success && response.data.data) {
+        console.log(`✅ Loaded ${response.data.data.length} colleges:`, response.data.data);
+        setColleges(response.data.data);
       } else {
-        console.error('❌ Invalid response format:', response);
+        console.error('❌ Invalid response format:', response.data);
       }
     } catch (error) {
       console.error('❌ Failed to load colleges:', error);
